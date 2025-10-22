@@ -3,31 +3,31 @@ from app.book_display import ConsoleDisplay, ReverseDisplay
 from app.book_printer import ConsolePrinter, ReversePrinter
 from app.book_serializer import JsonSerializer, XMLSerializer
 
+displayers = {
+    "console": ConsoleDisplay,
+    "reverse": ReverseDisplay,
+}
+printers = {
+    "console": ConsolePrinter,
+    "reverse": ReversePrinter,
+}
+serializers = {
+    "xml": XMLSerializer,
+    "json": JsonSerializer,
+}
 
 def main(book: Book, commands: list[tuple[str, str]]) -> None | str:
     result = None
     for cmd, method_type in commands:
         if cmd == "display":
-            if method_type == "console":
-                ConsoleDisplay().display(book)
-            elif method_type == "reverse":
-                ReverseDisplay().display(book)
-            else:
-                raise ValueError(f"Unknown {cmd} type {method_type}")
+            display = displayers[method_type]()
+            display.display(book)
         elif cmd == "print":
-            if method_type == "console":
-                ConsolePrinter().print_book(book)
-            elif method_type == "reverse":
-                ReversePrinter().print_book(book)
-            else:
-                raise ValueError(f"Unknown {cmd} type {method_type}")
+            printer = printers[method_type]()
+            printer.print_book(book)
         elif cmd == "serialize":
-            if method_type == "json":
-                result = JsonSerializer().serialize(book)
-            elif method_type == "xml":
-                result = XMLSerializer().serialize(book)
-            else:
-                raise ValueError(f"Unknown {cmd} type {method_type}")
+            serializer = serializers[method_type]()
+            return serializer.serialize(book)
     return result
 
 
